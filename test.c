@@ -46,6 +46,7 @@ int main()
             case SORT:
                 break;
             case EXIT:
+                DestoryContact(&con);
                 printf("退出通讯录\n");
                 break;
             default:

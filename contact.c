@@ -24,18 +24,48 @@ static int FindByName(const struct Contact* ps,char name[MAX_NAME])
 
 void InitContact(struct Contact* ps)
 {
-    memset(ps->data,0,sizeof(ps->data));
-    ps->size = 0;//设置通讯录最初只有零个元素
+    ps->data = (PeoInfo*)malloc(DEFAULT_SZ*sizeof(PeoInfo));
+    if(ps->data == NULL)
+    {
+        return;
+
+    }
+    ps->size = 0;
+    ps->capacity = DEFAULT_SZ;
+}
+
+void CheckCapacity(Contact* ps)
+{
+    if(ps->size == ps->capacity)
+    {
+        PeoInfo* ptr = realloc(ps->data,(ps->capacity+2)*sizeof(PeoInfo));
+        if(ptr != NULL)
+        {
+            ps->data = ptr;
+            ps->capacity+=2;
+            printf("增容成功");
+        }
+        else
+        {
+            printf("增容失败");
+        }
+    }
+    
 }
 
 void AddContact(struct Contact* ps)
 {
-    if(ps->size == MAX)
-    {
-        printf("通讯录已满\n");
-    }
-    else
-    {
+    //检测当前通讯录容量
+    //1.如果满了增加两个容量
+    //2.如果不满啥也不干
+    CheckCapacity(ps);
+    //增加数据
+    // if(ps->size == ps->capacity)
+    // {
+    //     printf("通讯录已满\n");
+    // }
+    // else
+    // {
         printf("请输入名字\n");
         scanf("%s",&ps->data[ps->size].name);
         printf("请输入年龄\n");
@@ -49,7 +79,7 @@ void AddContact(struct Contact* ps)
 
         ps->size++;
         printf("添加成功\n");
-    }
+    
 }
 
 void ShowContact(const struct Contact* ps)
@@ -70,11 +100,12 @@ void ShowContact(const struct Contact* ps)
 
 void  DeleteContact(struct Contact* ps)
 {
+    int pos = 0;
 
     char name[MAX_NAME];
     scanf("%s",&name);
     //查找要删除的人在什么位置
-    int pos = FindByName(ps,name);
+    pos = FindByName(ps,name);
 
     //删除
     if(pos == -1)
@@ -97,11 +128,12 @@ void  DeleteContact(struct Contact* ps)
 
 void SearchContact(const struct Contact* ps)
 {
+    int pos = 0;
     char name[MAX_NAME];
     printf("请输入要查找人的名字\n");
     scanf("%s",&name);
 
-    int pos = FindByName(ps,name);
+    pos = FindByName(ps,name);
     if(-1 == pos)
     {
         printf("通讯录中不存在此联系人");
@@ -123,11 +155,12 @@ void SearchContact(const struct Contact* ps)
 
 void ModifyContact(struct Contact* ps)
 {
+    int pos = 0;
     char name[MAX_NAME];
     printf("请输入要查找人的名字\n");
     scanf("%s",&name);
 
-    int pos = FindByName(ps,name);
+    pos = FindByName(ps,name);
 
     if(-1 == pos)
     {
@@ -151,4 +184,10 @@ void ModifyContact(struct Contact* ps)
 
     }
     
+}
+
+DestoryContact(Contact* ps)
+{
+    free(ps->data);
+    ps->data = NULL;
 }
